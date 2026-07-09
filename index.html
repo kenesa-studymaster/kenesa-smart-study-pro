@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Study Pro - Premium Edition</title>
+    <style>
+        :root {
+            --primary: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            --accent: #00b4db;
+            --accent-glow: rgba(0, 180, 219, 0.2);
+            --danger: #ff416c;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 25px;
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+
+        /* --- HEADER DESIGN MODERN & SPACED --- */
+        header {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 35px 20px;
+            position: relative;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Menu Button Sarara Sadii - Fixed positioning to avoid overlapping title */
+        .menu-btn {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 22px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            cursor: pointer;
+            border-radius: 12px;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 5;
+        }
+
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--accent);
+        }
+
+        /* Header Title - Center aligned with balanced horizontal padding */
+        header h1 { 
+            margin: 0; 
+            font-size: 23px; 
+            font-weight: 800; 
+            letter-spacing: -0.5px;
+            padding: 0 50px; /* Prevents text from hitting the menu button */
+        }
+        
+        header p { 
+            margin: 6px 0 0 0; 
+            font-size: 13px; 
+            opacity: 0.7; 
+            font-weight: 500;
+            padding: 0 50px;
+        }
+
+        .recent-sidebar {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 85%;
+            height: 100%;
+            background: #111827;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+            z-index: 100;
+            transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            box-sizing: border-box;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .recent-sidebar.active { left: 0; }
+
+        .close-btn {
+            align-self: flex-end;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 18px;
+            color: var(--text-muted);
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .recent-sidebar h3 {
+            margin-top: 15px;
+            color: var(--accent);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .recent-log-container {
+            overflow-y: auto;
+            flex-grow: 1;
+            margin-top: 10px;
+        }
+
+        .recent-item {
+            font-size: 13px;
+            background: #1f2937;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--accent);
+            color: #e5e7eb;
+        }
+
+        .tabs {
+            display: flex;
+            background: #0f172a;
+            padding: 6px;
+            margin: 20px 20px 10px 20px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--card-bg);
+            color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 10px 20px 25px 20px;
+        }
+
+        .tab-content.active { display: block; }
+
+        .card {
+            background: #1e293b;
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 { margin: 0 0 14px 0; font-size: 14px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        input, select {
+            padding: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+            background: #0f172a;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        button {
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-add { 
+            background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%); 
+            color: white; 
+            box-shadow: 0 4px 15px rgba(0, 180, 219, 0.3);
+        }
+        
+        .btn-add:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        .subject-dropdown-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #0f172a;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .dots-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-main);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dropdown-menu-list {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 55px;
+            background: #111827;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 200;
+            width: 180px;
+            overflow: hidden;
+        }
+
+        .dropdown-menu-list div {
+            padding: 12px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            color: #e5e7eb;
+            transition: background 0.2s;
+        }
+
+        .dropdown-menu-list div:hover {
+            background: var(--card-bg);
+            color: var(--accent);
+        }
+
+        .ai-response-box {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid #10b981;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #e2e8f0;
+        }
+
+        .encouragement-card-box {
+            margin-top: 15px;
+            padding: 14px;
+            border-radius: 12px;
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid #f59e0b;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #fde68a;
+            display: none;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 5px;
+        }
+
+        .dash-item {
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            padding: 14px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .dash-item small { color: var(--text-muted); font-weight: 500; }
+        .dash-item span { display: block; font-size: 16px; font-weight: 700; color: var(--accent); margin-top: 6px; }
+
+        .alarm-status {
+            font-weight: 700;
+            color: var(--danger);
+            margin-top: 12px;
+            text-align: center;
+            animation: blink 1s linear infinite;
+            display: none;
+            font-size: 14px;
+        }
+
+        @keyframes blink { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+
+        .summary-box {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #0f172a;
+            padding: 18px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-clear { 
+            background: transparent; 
+            color: #f43f5e; 
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            width: 100%; 
+        }
+
+        .btn-clear:hover { background: rgba(244, 63, 94, 0.1); }
+        .ad-banner { width: 100%; max-width: 480px; background: #1e293b; border: 1px dashed var(--border-color); border-radius: 14px; padding: 12px; text-align: center; font-size: 12px; color: var(--text-muted); box-sizing: border-box; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar for Recent Activity -->
+        <div id="recent-sidebar" class="recent-sidebar">
+            <button class="close-btn" onclick="toggleMenu()">×</button>
+            <h3>Recent Activity</h3>
+            <div class="recent-log-container" id="recent-log">
+                <div class="recent-item">App initialized successfully.</div>
+            </div>
+        </div>
+
+        <header>
+            <button class="menu-btn" onclick="toggleMenu()">☰</button>
+            <h1>Smart Study Pro 🚀</h1>
+            <p>Your Ultimate Learning Assistant</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'grade-tracker')">Grade Tracker</button>
+            <button class="tab-btn" onclick="openTab(event, 'ai-assistant')">AI Study Guide</button>
+        </div>
+
+        <!-- Tab 1: Grade Tracker -->
+        <div id="grade-tracker" class="tab-content active">
+            <div class="card">
+                <h3>Academic Overview</h3>
+                <p style="font-size: 13px; margin: 0 0 12px 0; color: var(--text-muted);">Track your progress metrics and insights at a single glance:</p>
+                <div class="dashboard-grid">
+                    <div class="dash-item">
+                        <small>Saved Profiles</small>
+                        <span id="dash-count">0 Subjects</span>
+                    </div>
+                    <div class="dash-item">
+                        <small>Target Level</small>
+                        <span id="dash-level">High School</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Add New Grade</h3>
+                <div class="input-group">
+                    <input type="text" id="subject-input" placeholder="Subject Name (e.g., Physics)">
+                    
+                    <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: -4px;">Select Level (Grade 9-12):</label>
+                    <select id="grade-level-select">
+                        <option value="Grade 9">Grade 9</option>
+                        <option value="Grade 10">Grade 10</option>
+                        <option value="Grade 11">Grade 11</option>
+                        <option value="Grade 12">Grade 12</option>
+                    </select>
+
+                    <input type="number" id="score-input" placeholder="Enter Score (0-100)">
+                    <button onclick="addGrade()" class="btn-add">Save Information</button>
+                </div>
+
+                <div id="encouragement-output" class="encouragement-card-box"></div>
+            </div>
+
+            <div class="summary-box">
+                <div id="average-display" style="text-align: center; font-weight: 700; font-size: 15px; color: var(--text-main);">Average Score: 0.0%</div>
+                <button onclick="clearGrades()" class="btn-clear">Clear All Records</button>
+            </div>
+        </div>
+
+        <!-- Tab 2: AI Study Assistant & Timer -->
+        <div id="ai-assistant" class="tab-content">
+            <div class="card">
+                <h3>AI Subject Assistant</h3>
+                <div class="input-group">
+                    <label style="font-size: 13px; font-weight: 600; color: var(--text-muted);">Choose Subject:</label>
+                    
+                    <div class="subject-dropdown-container">
+                        <span id="selected-subject-display" style="font-weight: 600; color: var(--accent);">Click 3 dots to pick a subject</span>
+                        <button class="dots-btn" onclick="toggleDropdown(event)">⋮</button>
+                        
+                        <div id="dropdown-menu" class="dropdown-menu-list">
+                            <div onclick="selectSubject('English')">ENGLISH ✍️</div>
+                            <div onclick="selectSubject('Mathematics')">MATHEMATICS 📐</div>
+                            <div onclick="selectSubject('Biology')">BIOLOGY 🧬</div>
+                            <div onclick="selectSubject('Chemistry')">CHEMISTRY 🧪</div>
+                            <div onclick="selectSubject('Physics')">PHYSICS ⚡</div>
+                            <div onclick="selectSubject('Citizenship')">CITIZENSHIP 🏛️</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>AI Smart Hacks</h3>
+                <div id="ai-output" class="ai-response-box">
+                    Select a subject via the menu above to unlock smart study methods!
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>⏰ Time to Study</h3>
+                <p style="font-size: 13px; margin: 0 0 12px 0; color: var(--text-muted);">Choose a specific time to set your session alarm (European 24-Hour Format).</p>
+                <div class="input-group">
+                    <input type="time" id="alarm-time" style="font-size: 16px; font-weight: 600; text-align: center;">
+                    <button onclick="setStudyAlarm()" class="btn-add" style="background: linear-gradient(135deg, #319795 0%, #234e52 100%); box-shadow: 0 4px 15px rgba(49, 151, 149, 0.3);">Set Study Alarm</button>
+                </div>
+                <div id="alarm-msg" class="alarm-status">🚨 TIME TO STUDY! Focus Session Active! 🚨</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ad-banner">
+        <div>Sponsored Ad Space (AdMob)</div>
+    </div>
+
+    <script>
+        let grades = [];
+        let currentChosenSubject = "";
+        let activeAlarmTime = null;
+        let alarmCheckInterval = null;
+
+        function toggleMenu() {
+            document.getElementById('recent-sidebar').classList.toggle('active');
+        }
+
+        function logActivity(text) {
+            const logBox = document.getElementById('recent-log');
+            const item = document.createElement('div');
+            item.className = 'recent-item';
+            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            item.innerHTML = `<small style="color:var(--accent);">[${time}]</small> ${text}`;
+            logBox.insertBefore(item, logBox.firstChild);
+        }
+
+        function openTab(evt, tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        function toggleDropdown(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('dropdown-menu');
+            menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+        }
+
+        document.addEventListener('click', () => {
+            document.getElementById('dropdown-menu').style.display = 'none';
+        });
+
+        function selectSubject(subj) {
+            currentChosenSubject = subj;
+            document.getElementById('selected-subject-display').innerText = subj;
+            generateEasyStudyMethod(subj);
+        }
+
+        function addGrade() {
+            const subjectInput = document.getElementById('subject-input');
+            const scoreInput = document.getElementById('score-input');
+            const gradeLevel = document.getElementById('grade-level-select').value;
+            
+            const subject = subjectInput.value.trim();
+            const score = parseFloat(scoreInput.value);
+
+            if (!subject || isNaN(score) || score < 0 || score > 100) {
+                alert("Please enter a valid subject name and a score between 0-100.");
+                return;
+            }
+
+            let encouragement = "";
+            if (score >= 85) {
+                encouragement = `🌟 <b>Excellent Work!</b> Your entry for <b>${subject}</b> (${gradeLevel}) shows incredible mastery. Keep leading your peers!`;
+            } else if (score >= 65) {
+                encouragement = `👍 <b>Good Progress!</b> A solid score of ${score}% for <b>${subject}</b>. Focus on challenging sub-topics to lock in an A next time!`;
+            } else {
+                encouragement = `📚 <b>Keep Pushing!</b> Registered ${score}% for <b>${subject}</b>. Consistency is key—use dynamic self-testing daily to systematically build up your confidence.`;
+            }
+
+            grades.push({ subject, score, gradeLevel });
+            logActivity(`Saved Info: ${subject} (${gradeLevel}) - Score: ${score}%`);
+
+            const box = document.getElementById('encouragement-output');
+            box.innerHTML = encouragement;
+            box.style.display = 'block';
+
+            subjectInput.value = '';
+            scoreInput.value = '';
+            calculateAverage();
+            updateDashboard(gradeLevel);
+        }
+
+        function calculateAverage() {
+            const display = document.getElementById('average-display');
+            if (grades.length === 0) {
+                display.innerHTML = "Average Score: 0.0%";
+                return;
+            }
+            const total = grades.reduce((sum, item) => sum + item.score, 0);
+            const average = total / grades.length;
+            display.innerHTML = `Average Score: ${average.toFixed(2)}%`;
+        }
+
+        function updateDashboard(lastLevel) {
+            document.getElementById('dash-count').innerText = `${grades.length} Subject(s)`;
+            document.getElementById('dash-level').innerText = lastLevel;
+        }
+
+        function clearGrades() {
+            grades = [];
+            calculateAverage();
+            document.getElementById('dash-count').innerText = "0 Subjects";
+            document.getElementById('dash-level').innerText = "High School";
+            document.getElementById('encouragement-output').style.display = 'none';
+            logActivity("Cleared all custom saved profiles.");
+            alert("All grade history cleared.");
+        }
+
+        function generateEasyStudyMethod(subject) {
+            const output = document.getElementById('ai-output');
+            let content = "";
+
+            if (subject === "English") {
+                content = `<b>Easy Study Approach:</b> Break vocabulary into daily sets of 5 words. Practice applying new structural suffixes contextually to remember them naturally.`;
+            } else if (subject === "Mathematics") {
+                content = `<b>Easy Study Approach:</b> Work through 3 simple formulas daily. Teach the concept steps out loud to test whether you fully understand the mechanics.`;
+            } else if (subject === "Biology") {
+                content = `<b>Easy Study Approach:</b> Draw short, clear sketches of processes or cells. Visual labeling bypasses the stress of long blocks of heavy text.`;
+            } else if (subject === "Chemistry") {
+                content = `<b>Easy Study Approach:</b> Focus heavily on atomic numbers and matching structural balances. Use memory associations to remember periodic table details effortlessly.`;
+            } else if (subject === "Physics") {
+                content = `<b>Easy Study Approach:</b> Connect formula letters directly with real life motions (like measuring absolute driving speed or mechanical force applications).`;
+            } else if (subject === "Citizenship") {
+                content = `<b>Easy Study Approach:</b> Form links between constitutional values and societal rules around your neighborhood. Telling it like a story guarantees easy understanding.`;
+            }
+
+            output.innerHTML = content;
+            logActivity(`Accessed Simple Hacks for ${subject}`);
+        }
+
+        function setStudyAlarm() {
+            const timeInput = document.getElementById('alarm-time').value;
+            const alarmMsg = document.getElementById('alarm-msg');
+
+            if (!timeInput) {
+                alert("Please select a valid time from the selector.");
+                return;
+            }
+
+            activeAlarmTime = timeInput; 
+            let subjectNotification = currentChosenSubject ? currentChosenSubject : "your tracked topics";
+            
+            alert(`Timer successfully armed! Your alert is scheduled for ${activeAlarmTime} to study ${subjectNotification}.`);
+            logActivity(`Armed study alarm for ${activeAlarmTime}.`);
+            alarmMsg.style.display = "none";
+
+            if (alarmCheckInterval) {
+                clearInterval(alarmCheckInterval);
+            }
+
+            alarmCheckInterval = setInterval(() => {
+                const now = new Date();
+                const current24HourTime = now.toTimeString().split(' ')[0].substring(0, 5);
+
+                if (current24HourTime === activeAlarmTime) {
+                    clearInterval(alarmCheckInterval);
+                    alarmMsg.style.display = "block";
+                    logActivity(`Alarm triggered at ${current24HourTime}: Session start!`);
+                    
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    if (audioCtx) {
+                        let osc = audioCtx.createOscillator();
+                        let gain = audioCtx.createGain();
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.type = "sine";
+                        osc.frequency.value = 880;
+                        osc.start();
+                        setTimeout(() => osc.stop(), 1200);
+                    }
+                    
+                    alert(`⏰ Time to Study! It is ${current24HourTime}. Open your book and let's work on ${subjectNotification}!`);
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
